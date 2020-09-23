@@ -1,28 +1,31 @@
 const express = require('express');
-const bodyParser = require('body-parser');
+// const bodyParser = require('body-parser');
 const logger = require('morgan');
+const mongoose = require('mongoose');
 
 const api = require('./routes');
 const app = express();
 
+const dotenv = require('dotenv');
+dotenv.config();
 
-const mongoose = require('mongoose');
-const dev_db_url = 'mongodb://localhost/tc-mongo-homework';
-const mongoDB = process.env.MONGODB_URI || dev_db_url;
-
-mongoose.connect(mongoDB);
-mongoose.Promise = global.Promise;
-
-const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'MongoDB connection error:'));
-
-app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use('/api', api);
+app.use(logger("dev"));
 
-const port = 4040;
-
-app.listen(port, () => {
-    console.log('Server is up and running on port numner ' + port);
+mongoose.set("useFindAndModify", false);
+mongoose.connect(process.env.DB_CONNECT, { useNewUrlParser: true, useUnifiedTopology: true,  useCreateIndex: true, }, () => {
+    console.log("Connected to db!");
+    app.listen(4000, () => console.log("Server Up and running"));
 });
+
+
+
+
+
+
+
+
+
+
